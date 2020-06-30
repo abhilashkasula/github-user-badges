@@ -1,6 +1,10 @@
 const https = require('https');
-const { grade } = require('./gradeUser');
+const {grade} = require('./gradeUser');
+const badges = require('./badges');
+const redis = require('redis');
 const {GITHUB_TOKEN} = process.env;
+
+const redisClient = redis.createClient({db: 2});
 
 const getOptions = () => ({
   host: 'api.github.com',
@@ -11,10 +15,9 @@ const getOptions = () => ({
   },
 });
 
-const getRepos = (username) => {
+const getRepos = ({username}) => {
   const options = getOptions();
   options.path = options.path.replace('__USER__', username);
-  console.log(options, username);
   return new Promise((resolve, reject) => {
     https.get(options, (res) => {
       let data = '';
@@ -35,8 +38,8 @@ const getLanguages = (repos) => {
     return new Promise((resolve, reject) => {
       https.get(repo.languages_url, options, (res) => {
         let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => resolve(JSON.parse(data)))
+        res.on('data', (chunk) => (data += chunk));
+        res.on('end', () => resolve(JSON.parse(data)));
       });
     });
   });
@@ -44,11 +47,30 @@ const getLanguages = (repos) => {
   return Promise.all(promises);
 };
 
-const main = (name) => {
-  getRepos(name)
-    .then(getLanguages)
-    .then(grade)
-    .then((badge) => console.log(badge));
+const getJob = () => {
+  return new Promise((resolve, reject) => {
+    redisClient.brpop('badge_queue', 2, (err, res) => {
+      if (res) {
+        return resolve(res[1]);
+      }
+      reject('no job');
+    });
+  });
 };
 
-main(process.argv[2]);
+const main = () => {
+  getJob().then((id) => {
+    badges
+      .get(redisClient, id)
+      .then(getRepos)
+      .then(getLanguages)
+      .then(grade)
+      .then(({badge, languages}) =>
+        badges.completedGrading(redisClient, id, badge, languages)
+      )
+      .then(() => console.log('Finished job', id))
+      .then(main);
+  }).catch(() => main());
+};
+
+main();
