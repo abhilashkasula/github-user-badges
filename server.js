@@ -18,4 +18,8 @@ app.post('/grade/:username', (req, res) => {
   });
 });
 
+app.get('/status/:id', (req, res) => {
+  badges.get(redisClient, req.params.id).then((job) => res.json(job));
+});
+
 app.listen(8000, () => console.log('listening at 8000..'));
