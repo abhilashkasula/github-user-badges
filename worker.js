@@ -6,13 +6,15 @@ const {GITHUB_TOKEN} = process.env;
 
 const redisClient = redis.createClient({db: 2});
 
+const getHeaders = () => ({
+  'User-Agent': 'curl/7.64.1',
+  authorization: `token ${GITHUB_TOKEN}`,
+});
+
 const getOptions = () => ({
   host: 'api.github.com',
   path: '/users/__USER__/repos',
-  headers: {
-    'User-Agent': 'curl/7.64.1',
-    authorization: `token ${GITHUB_TOKEN}`,
-  },
+  headers: getHeaders(),
 });
 
 const getRepos = ({username}) => {
@@ -28,12 +30,7 @@ const getRepos = ({username}) => {
 };
 
 const getLanguages = (repos) => {
-  const options = {
-    headers: {
-      'User-Agent': 'curl/7.64.1',
-      authorization: `token ${GITHUB_TOKEN}`,
-    },
-  };
+  const options = {headers: getHeaders()};
   const promises = JSON.parse(repos).map((repo) => {
     return new Promise((resolve, reject) => {
       https.get(repo.languages_url, options, (res) => {
@@ -58,19 +55,21 @@ const getJob = () => {
   });
 };
 
-const main = () => {
-  getJob().then((id) => {
-    badges
-      .get(redisClient, id)
-      .then(getRepos)
-      .then(getLanguages)
-      .then(grade)
-      .then(({badge, languages}) =>
-        badges.completedGrading(redisClient, id, badge, languages)
-      )
-      .then(() => console.log('Finished job', id))
-      .then(main);
-  }).catch(() => main());
+const loop = () => {
+  getJob()
+    .then((id) => {
+      badges
+        .get(redisClient, id)
+        .then(getRepos)
+        .then(getLanguages)
+        .then(grade)
+        .then(({badge, languages}) =>
+          badges.completedGrading(redisClient, id, badge, languages)
+        )
+        .then(() => console.log('Finished job', id))
+        .then(loop);
+    })
+    .catch(() => loop());
 };
 
-main();
+loop();
