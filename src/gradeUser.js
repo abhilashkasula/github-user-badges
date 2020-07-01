@@ -23,10 +23,10 @@ const getMaxLang = (languages) => {
 
 const getBadge = (languages) => {
   const numberOfLangs = Object.keys(languages).length;
-  if(numberOfLangs > 30) {
+  if(numberOfLangs >= 30) {
     return 'Sensational Linguist';
   }
-  if(numberOfLangs > 10) {
+  if(numberOfLangs >= 10) {
     return 'Super Linguist'
   }
   if(numberOfLangs < 5) {
