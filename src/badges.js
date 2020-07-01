@@ -1,12 +1,4 @@
-const getId = (client) => {
-  return new Promise((resolve, reject) => {
-    client.incr('badges_curr_id', (err, res) => {
-      resolve(res);
-    });
-  });
-};
-
-const createBadge = (client, id, username) => {
+const addBadge = (client, username) => {
   return new Promise((resolve, reject) => {
     const status = ['status', 'scheduled'];
     const receivedAt = ['receivedAt', new Date()];
@@ -14,26 +6,26 @@ const createBadge = (client, id, username) => {
     const badge = ['badge', 'none'];
     const languages = ['languages', 'none'];
     const data = status.concat(receivedAt, name, badge, languages);
-    client.hmset(`user_badge_${id}`, data, (err, res) => {
-      resolve(id);
+    client.hmset(username, data, (err, res) => {
+      client.expire(username, 300, (err, res) => {
+        resolve(username);
+      });
     });
   });
 };
 
-const addBadge = (client, username) => {
-  console.log(username);
-  return getId(client).then((id) => createBadge(client, id, username));
-};
-
-const get = (client, id) => {
+const get = (client, username) => {
   return new Promise((resolve, reject) => {
-    client.hgetall(`user_badge_${id}`, (err, res) => {
-      resolve(res);
+    client.hgetall(username, (err, res) => {
+      if (res) {
+        resolve(res);
+      }
+      reject('No badge found');
     });
   });
 };
 
-const completedGrading = (client, id, badge, languages) => {
+const completedGrading = (client, username, badge, languages) => {
   return new Promise((resolve, reject) => {
     const status = ['status', 'completed'];
     const badgeDetail = ['badge', badge];
@@ -41,7 +33,7 @@ const completedGrading = (client, id, badge, languages) => {
       'languages',
       JSON.stringify(languages),
     ]);
-    client.hmset(`user_badge_${id}`, details, (err, res) => {
+    client.hmset(username, details, (err, res) => {
       resolve(res);
     });
   });

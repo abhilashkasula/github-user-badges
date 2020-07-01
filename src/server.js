@@ -11,15 +11,20 @@ app.use((req, res, next) => {
 });
 
 app.post('/grade/:username', (req, res) => {
-  badges.addBadge(redisClient, req.params.username).then((id) => {
-    redisClient.lpush('badge_queue', id, () => {
-      res.json({id});
+  badges
+    .get(redisClient, req.params.username)
+    .then((job) => res.json(job))
+    .catch(() => {
+      badges.addBadge(redisClient, req.params.username).then((username) => {
+        redisClient.lpush('badge_queue', username, () => {
+          res.json({username});
+        });
+      });
     });
-  });
 });
 
-app.get('/status/:id', (req, res) => {
-  badges.get(redisClient, req.params.id).then((job) => res.json(job));
+app.get('/status/:username', (req, res) => {
+  badges.get(redisClient, req.params.username).then((job) => res.json(job));
 });
 
 app.listen(8000, () => console.log('listening at 8000..'));

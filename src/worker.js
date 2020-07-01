@@ -57,16 +57,16 @@ const getJob = () => {
 
 const loop = () => {
   getJob()
-    .then((id) => {
+    .then((username) => {
       badges
-        .get(redisClient, id)
+        .get(redisClient, username)
         .then(getRepos)
         .then(getLanguages)
         .then(grade)
         .then(({badge, languages}) =>
-          badges.completedGrading(redisClient, id, badge, languages)
+          badges.completedGrading(redisClient, username, badge, languages)
         )
-        .then(() => console.log('Finished job', id))
+        .then(() => console.log('Finished job', username))
         .then(loop);
     })
     .catch(() => loop());
