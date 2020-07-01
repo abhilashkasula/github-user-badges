@@ -63,8 +63,8 @@ const loop = () => {
         .then(getRepos)
         .then(getLanguages)
         .then(grade)
-        .then(({badge, languages}) =>
-          badges.completedGrading(redisClient, username, badge, languages)
+        .then((languages) =>
+          badges.completedGrading(redisClient, username, languages)
         )
         .then(() => console.log('Finished job', username))
         .then(loop);

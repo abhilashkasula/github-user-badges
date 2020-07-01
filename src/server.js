@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 app.post('/grade/:username', (req, res) => {
   badges
     .get(redisClient, req.params.username)
-    .then((job) => res.json(job))
+    .then(() => res.json({username: req.params.username}))
     .catch(() => {
       badges.addBadge(redisClient, req.params.username).then((username) => {
         redisClient.lpush('badge_queue', username, () => {

@@ -18,22 +18,19 @@ const get = (client, username) => {
   return new Promise((resolve, reject) => {
     client.hgetall(username, (err, res) => {
       if (res) {
-        resolve(res);
+        return resolve(res);
       }
       reject('No badge found');
     });
   });
 };
 
-const completedGrading = (client, username, badge, languages) => {
+const completedGrading = (client, username, {languages, topLanguage, badge}) => {
   return new Promise((resolve, reject) => {
     const status = ['status', 'completed'];
-    const badgeDetail = ['badge', badge];
-    const details = status.concat(badgeDetail, [
-      'languages',
-      JSON.stringify(languages),
-    ]);
-    client.hmset(username, details, (err, res) => {
+    const top = ['topLanguage', topLanguage, 'badge', badge];
+    const langs = ['languages', JSON.stringify(languages)];
+    client.hmset(username, status.concat(top, langs), (err, res) => {
       resolve(res);
     });
   });
