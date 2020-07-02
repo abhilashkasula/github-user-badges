@@ -1,0 +1,56 @@
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+td, th {
+  padding: 5px 0px 5px 0px;
+}
+
+.languages td, .languages th {
+  padding: 5px 20px;
+  background-color: #9ba4ad1a;
+  border-radius: 3px;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+}
+
+.languages {
+  margin-top: 20px;
+}
+
+.lang {
+  text-align: end;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.name {
+  font-size: large;
+  font-weight: 600;
+}
+
+.badge {
+  color: #007bff;
+  background: #cfe5ff;
+  font-size: small;
+  padding: 5px;
+  border-radius: 4px;
+  font-weight: 100;
+}
+
+#statuses {
+  margin-top: 30px;
+}
+
+#statuses > div > p {
+  text-align: center;
+}
+

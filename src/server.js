@@ -10,6 +10,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(express.static('public'));
+
 app.post('/grade/:username', (req, res) => {
   badges
     .get(redisClient, req.params.username)

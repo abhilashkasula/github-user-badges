@@ -55,6 +55,16 @@ const getJob = () => {
   });
 };
 
+const catchNotFound = (username) => {
+  const data = {
+    badge: 'none',
+    languages: {},
+    topLanguage: 'none',
+    repos: 0,
+  };
+  badges.completedGrading(redisClient, username, data).then(() => loop());
+};
+
 const loop = () => {
   getJob()
     .then((username) => {
@@ -67,7 +77,8 @@ const loop = () => {
           badges.completedGrading(redisClient, username, languages)
         )
         .then(() => console.log('Finished job', username))
-        .then(loop);
+        .then(loop)
+        .catch(() => catchNotFound(username));
     })
     .catch(() => loop());
 };

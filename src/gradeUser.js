@@ -23,17 +23,17 @@ const getMaxLang = (languages) => {
 
 const getBadge = (languages) => {
   const numberOfLangs = Object.keys(languages).length;
-  if(numberOfLangs >= 30) {
+  if (numberOfLangs >= 30) {
     return 'Sensational Linguist';
   }
-  if(numberOfLangs >= 10) {
-    return 'Super Linguist'
+  if (numberOfLangs >= 10) {
+    return 'Super Linguist';
   }
-  if(numberOfLangs < 5) {
+  if (numberOfLangs < 5) {
     return 'Beginner Linguist';
   }
   return 'Average Linguist';
-}
+};
 
 const grade = (repoLanguages) => {
   return new Promise((resolve, reject) => {
@@ -43,7 +43,8 @@ const grade = (repoLanguages) => {
     }, {});
     const topLanguage = getMaxLang(languages)[0];
     const badge = getBadge(languages);
-    resolve({languages, topLanguage, badge});
+    const repos = repoLanguages.length;
+    resolve({languages, topLanguage, badge, repos});
   });
 };
 

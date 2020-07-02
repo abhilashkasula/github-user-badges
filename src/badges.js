@@ -25,9 +25,9 @@ const get = (client, username) => {
   });
 };
 
-const completedGrading = (client, username, {languages, topLanguage, badge}) => {
+const completedGrading = ( client, username, {languages, topLanguage, badge, repos} ) => {
   return new Promise((resolve, reject) => {
-    const status = ['status', 'completed'];
+    const status = ['status', 'completed', 'repos', repos];
     const top = ['topLanguage', topLanguage, 'badge', badge];
     const langs = ['languages', JSON.stringify(languages)];
     client.hmset(username, status.concat(top, langs), (err, res) => {
