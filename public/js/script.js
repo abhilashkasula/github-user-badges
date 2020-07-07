@@ -6,7 +6,7 @@ const getLangsHtml = (languages) => {
 };
 
 const render = ({repos, username, badge, topLanguage, languages}) => {
-  const name = `<p class="name">${username} <span class="badge">${badge}</span></p>`;
+  document.querySelector(`#${username} p`).innerHTML = `${username} <span class="badge">${badge}`;
   const html = `<table class="info">
   <tr>
     <td>Total Public Repos</td>
@@ -24,20 +24,19 @@ const render = ({repos, username, badge, topLanguage, languages}) => {
     </tr>
     ${getLangsHtml(JSON.parse(languages))}
   </table>`;
-  document.querySelector(`#${username}`).innerHTML = name + html + table;
+  document.querySelector(`#${username} .data`).innerHTML = html + table;
 };
 
 const getStatus = (username) => {
   fetch(`status/${username}`)
     .then((res) => res.json())
     .then((data) => {
-      console.log(data);
-      const div = document.querySelector(`#${username}`);
+      const div = document.querySelector(`#${username} .data`);
       if (data.status == 'scheduled') {
-        div.innerText = 'Processing';
+        div.innerHTML = '<p>Processing</p>';
         return setTimeout(getStatus, 2000, username);
       }
-      if(data.badge === 'none') {
+      if (data.badge === 'none') {
         div.innerText = 'No user found';
         return;
       }
@@ -46,14 +45,23 @@ const getStatus = (username) => {
 };
 
 const grade = () => {
-  document.querySelector('#statuses').innerHTML = '';
   const username = document.querySelector('#username').value.trim();
-  if (!username) return;
+  if (!username || document.querySelector(`#${username}`)) return;
   fetch(`grade/${username}`, {method: 'POST'})
     .then((res) => res.json())
     .then(({username}) => {
       const div = document.createElement('div');
       div.id = username;
+      div.className = 'status';
+      const heading = document.createElement('p');
+      heading.innerText = username;
+      heading.className = 'name';
+      const data = document.createElement('div');
+      const hr = document.createElement('hr');
+      data.className = 'data';
+      div.appendChild(heading);
+      div.appendChild(hr);
+      div.appendChild(data);
       document.querySelector('#statuses').appendChild(div);
       getStatus(username);
     });

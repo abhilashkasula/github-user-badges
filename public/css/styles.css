@@ -37,6 +37,10 @@ td, th {
   font-weight: 600;
 }
 
+.data p {
+  text-align: center;
+}
+
 .badge {
   color: #007bff;
   background: #cfe5ff;
@@ -48,9 +52,28 @@ td, th {
 
 #statuses {
   margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 #statuses > div > p {
   text-align: center;
 }
 
+.status {
+  border: 1px solid #ccc;
+  padding: 0 20px 20px 20px;
+  border-radius: 4px;
+  min-width: 300px;
+  margin: 0 20px 20px 20px;
+}
+
+hr {
+  margin-bottom: 20px;
+}
+
+.status .data {
+  overflow: scroll;
+  max-height: 300px;
+}
