@@ -11,15 +11,14 @@ const getHeaders = () => ({
   authorization: `token ${GITHUB_TOKEN}`,
 });
 
-const getOptions = () => ({
+const getOptions = (path) => ({
   host: 'api.github.com',
-  path: '/users/__USER__/repos',
+  path,
   headers: getHeaders(),
 });
 
 const getRepos = ({username}) => {
-  const options = getOptions();
-  options.path = options.path.replace('__USER__', username);
+  const options = getOptions(`/users/${username}/repos`);
   return new Promise((resolve, reject) => {
     https.get(options, (res) => {
       let data = '';

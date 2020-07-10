@@ -10,15 +10,13 @@ const group = (languages, groups) => {
 };
 
 const getMaxLang = (languages) => {
-  return Object.keys(languages).reduce(
-    (max, lang) => {
-      if (max[1] < languages[lang]) {
-        return [lang, languages[lang]];
-      }
-      return max;
-    },
-    ['no lang', -Infinity]
-  );
+  const initial = ['no lang', -Infinity];
+  return Object.keys(languages).reduce((max, lang) => {
+    if (max[1] < languages[lang]) {
+      return [lang, languages[lang]];
+    }
+    return max;
+  }, initial);
 };
 
 const getBadge = (languages) => {
