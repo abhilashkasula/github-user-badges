@@ -2,9 +2,9 @@ const https = require('https');
 const {grade} = require('./gradeUser');
 const badges = require('./badges');
 const redis = require('redis');
-const {GITHUB_TOKEN} = process.env;
+const {GITHUB_TOKEN, REDIS_URL} = process.env;
 
-const redisClient = redis.createClient({db: 2});
+const redisClient = redis.createClient(REDIS_URL);
 
 const getHeaders = () => ({
   'User-Agent': 'curl/7.64.1',
