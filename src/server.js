@@ -1,9 +1,10 @@
 const express = require('express');
 const redis = require('redis');
 const badges = require('./badges');
+const REDIS_URL = process.argv.REDIS_URL;
 
 const app = express();
-const redisClient = redis.createClient({db: 2});
+const redisClient = redis.createClient(REDIS_URL);
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
